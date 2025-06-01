@@ -21,7 +21,7 @@ public class ServicioVentaImpl implements ServicioVenta {
     @Autowired
     private FuncionRepositorio funcionRepositorio;
 
-    @Autowired(required = false) // El usuario no siempre estará presente
+    @Autowired(required = false)
     private UsuarioRepositorio usuarioRepositorio;
 
     @Autowired
@@ -37,13 +37,10 @@ public class ServicioVentaImpl implements ServicioVenta {
         Funcion funcion = funcionRepositorio.findById(idFuncion).orElseThrow(() -> new RuntimeException("Función no encontrada"));
         Usuario usuario = (idUsuario != null) ? usuarioRepositorio.findById(idUsuario).orElse(null) : null;
 
-        // Validar disponibilidad con el sistema centralizado
         servicioCentralizado.validarDisponibilidadAsiento(asiento.getIdAsiento(), funcion.getId());
 
-        // Calcular el precio final
         Double precioFinal = calcularPrecioFinal(asiento, funcion, usuario);
 
-        // Crear la venta
         Venta venta = new Venta();
         venta.setAsiento(asiento);
         venta.setFuncion(funcion);
@@ -51,11 +48,9 @@ public class ServicioVentaImpl implements ServicioVenta {
         venta.setPrecioFinal(precioFinal);
         Venta ventaGuardada = ventaRepositorio.save(venta);
 
-        // Marcar el asiento como vendido
         asiento.setEstado(asiento.getEstado().VENDIDO);
         asientoRepositorio.save(asiento);
 
-        // Enviar información de la venta al sistema centralizado
         servicioCentralizado.enviarInformacionVenta(ventaGuardada);
 
         return ventaGuardada;
@@ -67,17 +62,15 @@ public class ServicioVentaImpl implements ServicioVenta {
     }
 
     private Double calcularPrecioFinal(Asiento asiento, Funcion funcion, Usuario usuario) {
-        Double precioBase = asiento.getLugar().getPrecio(); // Usamos el precio del lugar asociado al asiento
+        Double precioBase = asiento.getPrecio();
         Double precioFinal = precioBase;
 
-        // Aplicar descuento por día de la función (excepto VIP)
-        if (funcion.getDia().equalsIgnoreCase("Segundo día") && !asiento.getLugar().getNombre().equalsIgnoreCase("VIP")) {
+        if (funcion.getDia().equalsIgnoreCase("Segundo día") && !asiento.getLocalidad().equalsIgnoreCase("VIP")) {
             if (funcion.getDescuentoSegundoDia() != null) {
                 precioFinal -= precioBase * funcion.getDescuentoSegundoDia();
             }
         }
 
-        // Aplicar descuento por usuario
         if (usuario != null && usuario.getDescuento() != null) {
             precioFinal -= precioFinal * usuario.getDescuento();
         }
