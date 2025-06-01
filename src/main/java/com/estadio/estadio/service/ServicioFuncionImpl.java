@@ -1,5 +1,12 @@
 package com.estadio.estadio.service;
 
+import com.estadio.estadio.model.Funcion;
+import com.estadio.estadio.repositorio.FuncionRepositorio;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
 @Service
 public class ServicioFuncionImpl implements ServicioFuncion {
 
