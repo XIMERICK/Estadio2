@@ -13,13 +13,13 @@ import com.estadio.estadio.enums.EstadoAsiento;
 public class Asiento {
     @Id
     private String idAsiento;
-    private String ubicacion;
+    private String localidad;
     private Double precio;
     private EstadoAsiento estado;
 
-public Asiento(String idAsiento, String ubicacion, Double precio) {
+public Asiento(String idAsiento, String localidad, Double precio) {
     this.idAsiento = idAsiento;
-    this.ubicacion = ubicacion;
+    this.localidad = localidad;
     this.precio = precio;
     this.estado = EstadoAsiento.DISPONIBLE;
 }

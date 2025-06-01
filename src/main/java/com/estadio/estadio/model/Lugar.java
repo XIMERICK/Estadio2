@@ -17,6 +17,6 @@ public class Lugar {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String nombre;
+    private String localidad;
     private Double precio;
 }
