@@ -37,6 +37,11 @@ public class ServicioAsientoImpl implements ServicioAsiento {
     }
 
     @Override
+    public List<Asiento> obtenerTodosLosAsientos() {
+        return asientoRepositorio.findAll();
+    }
+
+    @Override
     public Asiento obtenerAsientoPorId(String idAsiento) {
         return asientoRepositorio.findById(idAsiento).orElse(null);
     }
