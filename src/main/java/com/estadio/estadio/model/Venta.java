@@ -28,8 +28,7 @@ public class Venta {
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
-    @ManyToOne
-    @JoinColumn(name = "precioFinal_id")
+    @Column(name = "precioFinal_id")
     private Double precioFinal;
 
 }
