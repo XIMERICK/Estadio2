@@ -5,6 +5,7 @@ import com.estadio.estadio.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -28,6 +29,9 @@ public class DatabaseInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        System.out.println("--- Iniciando DatabaseInitializer ---");
+
+        // 1. Inicializar y guardar Usuarios
         List<Usuario> usuarios = Arrays.asList(
                 new Usuario(null, "yenifer", "burtica", "1002654234", 0.30),
                 new Usuario(null, "lina", "aranzazu", "100986324", 0.30),
@@ -73,7 +77,7 @@ public class DatabaseInitializer implements CommandLineRunner {
         }
         System.out.println("Datos de lugar inicializados.");
 
-        // --- 3. Inicializar y guardar Funciones ---
+        // 3. Inicializar y guardar Funciones
         List<Funcion> funciones = Arrays.asList(
                 new Funcion(null, "viernes", 0.00),
                 new Funcion(null, "sabado", 0.30)
@@ -83,7 +87,6 @@ public class DatabaseInitializer implements CommandLineRunner {
         }
         System.out.println("Datos de función inicializados.");
 
-        // --- 4. Inicializar y guardar Asientos ---
         List<Asiento> asientos = Arrays.asList(
                 new Asiento("NB001", "norte barras", 70000.0),
                 new Asiento("NB002", "norte barras", 70000.0),
@@ -247,42 +250,43 @@ public class DatabaseInitializer implements CommandLineRunner {
 
         Usuario usuarioParaVenta1 = servicioUsuario.obtenerUsuarioPorId(1L);
         Usuario usuarioParaVenta2 = servicioUsuario.obtenerUsuarioPorId(2L);
-        Funcion funcionViernes = servicioFuncion.obtenerFuncionPorId(1L);
-        Funcion funcionSabado = servicioFuncion.obtenerFuncionPorId(2L);
+
+        Funcion funcionViernes = servicioFuncion.obtenerFuncionPorDia("viernes");
+        Funcion funcionSabado = servicioFuncion.obtenerFuncionPorDia("sabado");
 
         Asiento asientoNB001 = servicioAsiento.obtenerAsientoPorId("NB001");
         Asiento asientoOL005 = servicioAsiento.obtenerAsientoPorId("OL005");
 
+        System.out.println("DEBUG: Asiento NB001 encontrado: " + (asientoNB001 != null ? "SÍ" : "NO"));
+        System.out.println("DEBUG: Función 'viernes' encontrada: " + (funcionViernes != null ? "SÍ" : "NO"));
+        System.out.println("DEBUG: Usuario 1 encontrado: " + (usuarioParaVenta1 != null ? "SÍ" : "NO"));
 
-        if (asientoNB001 != null && funcionViernes != null) {
-            servicioVenta.realizarVenta(asientoNB001.getIdAsiento(), funcionViernes.getId(), usuarioParaVenta1 != null ? usuarioParaVenta1.getId() : null);
+        System.out.println("DEBUG: Asiento OL005 encontrado: " + (asientoOL005 != null ? "SÍ" : "NO"));
+        System.out.println("DEBUG: Función 'sabado' encontrada: " + (funcionSabado != null ? "SÍ" : "NO"));
+        System.out.println("DEBUG: Usuario 2 encontrado: " + (usuarioParaVenta2 != null ? "SÍ" : "NO"));
+
+        // --- Realizar las ventas, solo si todos los elementos necesarios son encontrados ---
+        if (asientoNB001 != null && funcionViernes != null && usuarioParaVenta1 != null) {
+            servicioVenta.realizarVenta(asientoNB001.getIdAsiento(), funcionViernes.getId(), usuarioParaVenta1.getId());
         } else {
-            System.err.println("Advertencia: No se pudo realizar la venta de NB001. Asiento o Función no encontrados.");
+            System.err.println("Advertencia: No se pudo realizar la venta de NB001. Detalles de no encontrado: " +
+                    "Asiento NB001: " + (asientoNB001 != null ? "Sí" : "No") +
+                    ", Función 'viernes': " + (funcionViernes != null ? "Sí" : "No") +
+                    ", Usuario 1: " + (usuarioParaVenta1 != null ? "Sí" : "No"));
         }
 
-        if (asientoOL005 != null && funcionSabado != null) {
-            servicioVenta.realizarVenta(asientoOL005.getIdAsiento(), funcionSabado.getId(), usuarioParaVenta2 != null ? usuarioParaVenta2.getId() : null);
+        if (asientoOL005 != null && funcionSabado != null && usuarioParaVenta2 != null) {
+            servicioVenta.realizarVenta(asientoOL005.getIdAsiento(), funcionSabado.getId(), usuarioParaVenta2.getId());
         } else {
-            System.err.println("Advertencia: No se pudo realizar la venta de OL005. Asiento o Función no encontrados.");
+            System.err.println("Advertencia: No se pudo realizar la venta de OL005. Detalles de no encontrado: " +
+                    "Asiento OL005: " + (asientoOL005 != null ? "Sí" : "No") +
+                    ", Función 'sabado': " + (funcionSabado != null ? "Sí" : "No") +
+                    ", Usuario 2: " + (usuarioParaVenta2 != null ? "Sí" : "No"));
         }
 
         System.out.println("Datos de venta inicializados.");
+        System.out.println("--- DatabaseInitializer Finalizado ---");
     }
 
-    private Venta crearVenta(String asientoId, Long funcionId, Long usuarioId, Double precioFinal) {
-        Asiento asiento = servicioAsiento.obtenerAsientoPorId(asientoId);
-        Funcion funcion = servicioFuncion.obtenerFuncionPorId(funcionId);
-        Usuario usuario = (usuarioId != null) ? servicioUsuario.obtenerUsuarioPorId(usuarioId) : null;
 
-        if (asiento == null) {
-            System.err.println("Error al crear venta: Asiento no encontrado para asientoId=" + asientoId);
-            return null;
         }
-        if (funcion == null) {
-            System.err.println("Error al crear venta: Funcion no encontrada para funcionId=" + funcionId);
-            return null;
-        }
-
-        return new Venta(null, asiento, funcion, usuario, precioFinal);
-    }
-}

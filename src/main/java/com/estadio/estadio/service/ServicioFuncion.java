@@ -9,4 +9,6 @@ public interface ServicioFuncion {
     List<Funcion> obtenerTodasLasFunciones();
     Funcion guardarFuncion(Funcion funcion);
     void eliminarFuncion(Long idFuncion);
+
+    Funcion obtenerFuncionPorDia(String viernes);
 }
