@@ -15,6 +15,5 @@ public interface ServicioAsiento {
     void marcarAsientoComoVendido(Asiento asiento);
 
     @Transactional
-        // ¡Añade esta anotación!
     void registrarAsiento(Asiento asiento);
 }

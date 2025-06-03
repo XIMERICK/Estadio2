@@ -265,7 +265,6 @@ public class DatabaseInitializer implements CommandLineRunner {
         System.out.println("DEBUG: Función 'sabado' encontrada: " + (funcionSabado != null ? "SÍ" : "NO"));
         System.out.println("DEBUG: Usuario 2 encontrado: " + (usuarioParaVenta2 != null ? "SÍ" : "NO"));
 
-        // --- Realizar las ventas, solo si todos los elementos necesarios son encontrados ---
         if (asientoNB001 != null && funcionViernes != null && usuarioParaVenta1 != null) {
             servicioVenta.realizarVenta(asientoNB001.getIdAsiento(), funcionViernes.getId(), usuarioParaVenta1.getId());
         } else {

@@ -22,7 +22,6 @@ public class VentaController {
             Venta venta = servicioVenta.realizarVenta(asientoId, funcionId, usuarioId);
             return new ResponseEntity<>(venta, HttpStatus.CREATED);
         } catch (RuntimeException e) {
-            // Podríamos tener manejo de excepciones más específico
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
